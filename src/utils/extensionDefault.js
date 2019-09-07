@@ -1,8 +1,6 @@
-import { FormItem } from './struct'
-
 const ExtensionDefault = {
-  text: (id: number): FormItem => ({
-    id: id,
+  text: {
+    idx: 2,
     extension: 'text',
     name: '',
     type: 'text',
@@ -11,13 +9,14 @@ const ExtensionDefault = {
     description: '',
     tip: '',
     require: false,
+    case: [],
     caseEditable: false,
     rangeName: '字数',
     range: [],
     useRange: false
-  }),
-  number: (id: number): FormItem => ({
-    id: id,
+  },
+  number: {
+    idx: 3,
     extension: 'number',
     name: '',
     type: 'number',
@@ -26,13 +25,14 @@ const ExtensionDefault = {
     description: '',
     tip: '',
     require: false,
+    case: [],
     caseEditable: false,
     rangeName: '值',
     range: [],
     useRange: false
-  }),
-  radio: (id: number): FormItem => ({
-    id: id,
+  },
+  radio: {
+    idx: 4,
     extension: 'radio',
     name: '',
     type: 'radio',
@@ -46,9 +46,9 @@ const ExtensionDefault = {
     rangeName: '',
     range: [],
     useRange: false
-  }),
-  checkbox: (id: number): FormItem => ({
-    id: id,
+  },
+  checkbox: {
+    idx: 5,
     extension: 'checkbox',
     name: '',
     type: 'checkbox',
@@ -62,9 +62,9 @@ const ExtensionDefault = {
     rangeName: '选择项数',
     range: [],
     useRange: false
-  }),
-  date: (id: number): FormItem => ({
-    id: id,
+  },
+  date: {
+    idx: 6,
     extension: 'date',
     name: '',
     type: 'date',
@@ -74,12 +74,13 @@ const ExtensionDefault = {
     tip: '',
     require: false,
     caseEditable: false,
+    case: [],
     rangeName: '日期',
     range: [],
     useRange: false
-  }),
-  textarea: (id: number): FormItem => ({
-    id: id,
+  },
+  textarea: {
+    idx: 7,
     extension: 'textarea',
     name: '',
     type: 'textarea',
@@ -89,12 +90,13 @@ const ExtensionDefault = {
     tip: '',
     require: false,
     caseEditable: false,
+    case: [],
     rangeName: '字数',
     range: [],
     useRange: false
-  }),
-  group: (id: number): FormItem => ({
-    id: id,
+  },
+  group: {
+    idx: 8,
     extension: 'group',
     name: '',
     type: '',
@@ -104,13 +106,14 @@ const ExtensionDefault = {
     tip: '',
     require: false,
     caseEditable: false,
+    case: [],
     rangeName: '',
     range: [],
     useRange: false
-  }),
+  },
   //
-  personName: (id: number): FormItem => ({
-    id: id,
+  personName: {
+    idx: 10,
     extension: 'personName',
     name: '姓名',
     type: 'text',
@@ -120,12 +123,13 @@ const ExtensionDefault = {
     tip: '请输入姓名',
     require: true,
     caseEditable: false,
+    case: [],
     rangeName: '姓名长度',
     range: [2, 20],
     useRange: true
-  }),
-  teamName: (id: number): FormItem => ({
-    id: id,
+  },
+  teamName: {
+    idx: 11,
     extension: 'teamName',
     name: '队伍名称',
     type: 'text',
@@ -135,12 +139,13 @@ const ExtensionDefault = {
     tip: '请输入队伍名称',
     require: true,
     caseEditable: false,
+    case: [],
     rangeName: '队名长度',
     range: [1, 100],
     useRange: false
-  }),
-  sex: (id: number): FormItem => ({
-    id: id,
+  },
+  sex: {
+    idx: 12,
     extension: 'sex',
     name: '性别',
     type: 'sex',
@@ -154,9 +159,9 @@ const ExtensionDefault = {
     rangeName: '',
     range: [],
     useRange: false
-  }),
-  nation: (id: number): FormItem => ({
-    id: id,
+  },
+  nation: {
+    idx: 13,
     extension: 'nation',
     name: '民族',
     type: 'nation',
@@ -166,13 +171,14 @@ const ExtensionDefault = {
     tip: '请选择民族',
     require: true,
     caseEditable: false,
+    case: [],
     // 就不提供民族表了
     rangeName: '',
     range: [],
     useRange: false
-  }),
-  political: (id: number): FormItem => ({
-    id: id,
+  },
+  political: {
+    idx: 14,
     extension: 'political',
     name: '政治面貌',
     type: 'radio',
@@ -186,9 +192,9 @@ const ExtensionDefault = {
     rangeName: '',
     range: [],
     useRange: false
-  }),
-  studentNumber: (id: number): FormItem => ({
-    id: id,
+  },
+  studentNumber: {
+    idx: 15,
     extension: 'studentNumber',
     name: '学号',
     type: 'studentNumber',
@@ -201,9 +207,9 @@ const ExtensionDefault = {
     rangeName: '',
     range: [],
     useRange: false
-  }),
-  phone: (id: number): FormItem => ({
-    id: id,
+  },
+  phone: {
+    idx: 16,
     extension: 'phone',
     name: '手机号',
     type: 'phone',
@@ -216,9 +222,9 @@ const ExtensionDefault = {
     rangeName: '',
     range: [],
     useRange: false
-  }),
-  qq: (id: number): FormItem => ({
-    id: id,
+  },
+  qq: {
+    idx: 17,
     extension: 'qq',
     name: 'QQ号',
     type: 'qq',
@@ -231,9 +237,9 @@ const ExtensionDefault = {
     rangeName: '',
     range: [],
     useRange: false
-  }),
-  email: (id: number): FormItem => ({
-    id: id,
+  },
+  email: {
+    idx: 18,
     extension: 'email',
     name: '电子邮箱',
     type: 'email',
@@ -246,9 +252,9 @@ const ExtensionDefault = {
     rangeName: '',
     range: [],
     useRange: false
-  }),
-  idcard: (id: number): FormItem => ({
-    id: id,
+  },
+  idcard: {
+    idx: 19,
     extension: 'idcard',
     name: '身份证号',
     type: 'idcard',
@@ -261,9 +267,9 @@ const ExtensionDefault = {
     rangeName: '',
     range: [],
     useRange: false
-  }),
-  GPA: (id: number): FormItem => ({
-    id: id,
+  },
+  GPA: {
+    idx: 20,
     extension: 'GPA',
     name: 'GPA',
     type: 'GPA',
@@ -276,9 +282,9 @@ const ExtensionDefault = {
     rangeName: 'GPA',
     range: [0, 4],
     useRange: false
-  }),
-  rank: (id: number): FormItem => ({
-    id: id,
+  },
+  rank: {
+    idx: 21,
     extension: 'rank',
     name: '排名',
     type: 'number',
@@ -291,7 +297,7 @@ const ExtensionDefault = {
     rangeName: '排名',
     range: [1, 10000],
     useRange: false
-  })
+  }
 }
 
 export default ExtensionDefault
