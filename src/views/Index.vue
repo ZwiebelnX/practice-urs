@@ -54,7 +54,7 @@
                   class="clearfix"
                 >
                 <el-tooltip
-                   
+
                     class="title button"
                     style="float: left;margin-top:-10px;"
                     effect="dark"
@@ -141,7 +141,7 @@
                 <div style="text-align:left">
                   截止时间：{{j.endTime}}
                 </div>
-                
+
               </el-card>
             </el-col>
 
@@ -150,7 +150,7 @@
 
       </el-main>
       <el-footer>
-       
+
       </el-footer>
     </el-container>
 
@@ -158,7 +158,7 @@
 
 </template>
 import { Component, Vue } from "vue-property-decorator";
-import Header from "../components/Header.vue"; 
+import Header from "../components/Header.vue";
 
 @Component({
   components: {
@@ -220,7 +220,7 @@ activeIndex: '1',
           endTime: "2019-11-07 23:15:00"
         },]},
         {
-          
+
           act:[ {
           id:3,
           name: "3",
@@ -249,13 +249,13 @@ activeIndex: '1',
     mounted() {
      var _this = this
                 _this.$http.get('/admin/activity', {
-                        
+
                     }, { emulateJSON: true }
                 )
                     .then(function (response) {
                         if (response.ok) {
                             console.log(response)
-                            
+
                         } else {
                             alert('错误')
                         }
@@ -296,17 +296,17 @@ activeIndex: '1',
         for(var j=0;j<this.activity[i].act.length;j++){
           if(this.activity[i].act[j].id==id){
             console.log(this.activity[i].act[j].status);
-            
+
             //  Vue.set(this.activity[i].act[j],status,1);
             this.activity[i].act[j].status = 1;
              console.log(this.activity[i].act[j].status);
           }
         }
       }
-       
+
     },
     download() {}
   }
-  
+
 };
 </script>

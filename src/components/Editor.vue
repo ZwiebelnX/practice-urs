@@ -11,6 +11,8 @@
         start-placeholder="开始日期"
         end-placeholder="结束日期"
         :default-time="['12:00:00', '08:00:00']"
+        value-format = 'yyyy-MM-dd HH:mm:ss'
+        @change="changeDate()"
         style="float: left">
       </el-date-picker>
     </div>
@@ -72,7 +74,7 @@
                <el-switch v-model="form.unique" active-color="#409EFF" inactive-color="#d3dce6" style="float: bottom;"></el-switch>
               </el-col>
             </el-row>
-            <el-row :gutter="10"  v-if="form.idx !==4">
+            <el-row :gutter="10"  v-if="form.idx !==4 && (form.idx < 12 ||form.idx>19)">
                <el-col :span="6" class="tablelabel">
                 表项是否使用范围限制
                </el-col>
@@ -105,7 +107,7 @@
                    </el-date-picker>
               </el-col>
             </el-row>
-            <el-row :gutter="10"  v-if="form.idx !== 6">
+            <el-row :gutter="10"  v-if="form.idx !== 6 && (form.idx < 12 ||form.idx>19)">
               <el-col :span="6" class="tablelabel">
                 -
               </el-col>
@@ -130,6 +132,21 @@
                    </el-date-picker>
               </el-col>
             </el-row>
+              <el-row :gutter="10" v-else-if="form.idx===12">
+                <el-col :span="6" class="tablelabel">
+                表项默认值
+                </el-col>
+                <el-col :span="5">
+                  <el-select v-model="form.defaultValue"  @change="selectchange()" placeholder="请选择">
+                    <el-option
+                      v-for="item in options"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value">
+                    </el-option>
+                  </el-select>
+                </el-col>
+              </el-row>
             <el-row :gutter="10" v-else>
               <el-col :span="6" class="tablelabel">
                 表项默认值
@@ -138,7 +155,7 @@
                 <el-input v-model="form.defaultValue"></el-input>
               </el-col>
             </el-row>
-            <el-row :gutter="10" v-if="form.idx ===4|| form.idx ===5">
+            <el-row :gutter="10" v-if="form.idx ===4|| form.idx ===5 ||form.idx ===14">
               <el-col :span="6" class="tablelabel">
                 表项新选项
               </el-col>
@@ -176,7 +193,7 @@
             </div>
             <div slot="footer" class="dialog-footer">
               <el-button @click="dialogFormVisible = false">取 消</el-button>
-              <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+              <el-button type="primary" @click="changeElement(node,data)">确 定</el-button>
             </div>
           </el-dialog>
         </span>
@@ -218,7 +235,17 @@
                     caseinputValue: '',
                     children: []
                 },
-                formLabelWidth: '120px'
+                formLabelWidth: '120px',
+                options: [{
+                    value: '',
+                    label: '无默认选项'
+                }, {
+                    value: '男',
+                    label: '男'
+                }, {
+                    value: '女',
+                    label: '女'
+                }]
             }
         },
         computed: {
@@ -275,6 +302,23 @@
                     this.form.case.push(inputValue)
                 }
                 this.form.caseinputValue = ''
+            },
+            selectchange () {
+                // console.log(this.form.defaultValue)
+            },
+            changeElement (node, data) {
+                this.dialogFormVisible = false
+                const parent = node.parent
+                const children = parent.data.children || parent.data
+                const index = children.findIndex(d => d.id === data.id)
+                children.splice(index, 1, this.form)
+                const updatedata = this.datas
+                store.commit('updateTable', updatedata)
+                console.log(store.state.newTable)
+            },
+            changeDate () {
+                // console.log(this.value3)
+                store.commit('setTime', this.value3)
             }
         }
     }
