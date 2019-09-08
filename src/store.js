@@ -7,7 +7,9 @@ export default new Vuex.Store({
   state: {
     tableItemId: 1000,
     newTable: [],
-    tableName: ''
+    tableName: '',
+    startTime: '',
+    endTime: ''
   },
   mutations: {
     updateTable (state, data) {
@@ -38,6 +40,10 @@ export default new Vuex.Store({
     },
     setTableName (state, data) {
       state.tableName = data
+    },
+    setTime (state, data) {
+      state.startTime = data[0]
+      state.endTime = data[1]
     }
   },
   actions: {
