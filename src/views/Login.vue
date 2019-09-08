@@ -10,7 +10,7 @@
       </el-form-item>
       <el-checkbox v-model="checked" checked class="remember">记住密码</el-checkbox>
       <el-form-item style="width:100%;">
-        <el-button type="primary" style="width:100%;" @click="login()" >登录</el-button>
+        <el-button type="primary" style="width:100%;" @click="submitForm('ruleForm2')" >登录</el-button>
         <!--<el-button @click.native.prevent="handleReset2">重置</el-button>-->
       </el-form-item>
     </el-form>
@@ -23,8 +23,8 @@
         data () {
             return {
                 ruleForm2: {
-                    account: '院科协',
-                    checkPass: 'yuankexie2019'
+                    account: 'admin',
+                    checkPass: 'cse2016'
                 },
                 rules2: {
                     account: [
@@ -40,23 +40,28 @@
             }
         },
         methods: {
-            login () {
-                var _this = this
-                _this.$http.post('http://47.100.16.60:8080/login', {
-                        username: _this.ruleForm2.account,
-                        password: _this.ruleForm2.checkPass
-                    }, { emulateJSON: true }
-                )
-                    .then(function (response) {
+            submitForm () {
+                this.$http.post('/api/login',
+                    {
+                        username: this.ruleForm2.account,
+                        password: this.ruleForm2.checkPass
+                    })
+                    .then((response) => {
                         if (response.ok) {
                             console.log(response)
-                            this.$router.push('/index')
-                        } else {
-                            alert('错误')
+                            this.$router.push('/addtable')
                         }
                     })
                     .catch(function (error) {
                         console.log(error)
+                        if (error.status === 401) {
+                            // console.log('错误')
+                            this.$message('密码错误')
+                        } else if (error.status === 403) {
+                            this.$message('禁止访问')
+                        } else {
+                            this.$message('不明错误')
+                        }
                     })
             }
         }

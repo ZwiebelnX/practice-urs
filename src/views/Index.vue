@@ -180,9 +180,6 @@ import Header from "../components/Header.vue";
   background: gainsboro;
 }
 
-.el-aside {
-  color: #333;
-}
 </style>
 
 <script type="text/javascript">

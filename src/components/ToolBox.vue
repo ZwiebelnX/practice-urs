@@ -6,7 +6,11 @@
       :expand-on-click-node="false">
       <span class="custom-tree-node" slot-scope="{ node, data }">
         <span>{{ node.label }}</span>
-        <div v-if="data.idx !== 1 && data.idx !== 9 && data.idx !== 21">
+        <div v-if="data.idx ===4">
+          **
+        </div>
+        <div v-if="data.idx !== 1 && data.idx !== 9 && data.idx !== 22">
+          <span>{{data.idx}}</span>
         <span>
            <el-button
              type="text"
@@ -39,16 +43,16 @@
         },
         methods: {
             addelements (node, data) {
-                if (data.idx === 22) {
+                if (data.idx === 23) {
                     store.commit('setTableName', data.label)
                     store.commit('updateTable', this.ccfData)
                 } else {
-                    const addData = {
-                        idx: data.idx,
-                        label: data.label
-                    }
-                    console.log(addData)
-                    store.commit('addElement2Table', addData)
+                    // const addData = {
+                    //     idx: data.idx,
+                    //     label: data.label
+                    // }
+                    // console.log(data)
+                    store.commit('addElement2Table', data)
                 }
             }
         }
