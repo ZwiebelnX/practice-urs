@@ -40,6 +40,7 @@
             }
         },
         methods: {
+            
             submitForm () {
                 this.$http.post('/api/login',
                     {

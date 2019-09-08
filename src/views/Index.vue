@@ -53,8 +53,7 @@
                   slot="header"
                   class="clearfix"
                 >
-                <el-tooltip
-                   
+                  <el-tooltip
                     class="title button"
                     style="float: left;margin-top:-10px;"
                     effect="dark"
@@ -83,7 +82,6 @@
                     ></el-button>
                   </el-tooltip>
 
-
                   <span style="text-align:left">{{j.name}}</span>
                   <el-tooltip
                     v-if="j.status==3"
@@ -96,7 +94,7 @@
                     <el-button
                       icon="el-icon-download"
                       circle
-                      @click="download()"
+                      @click="download(j.id)"
                     ></el-button>
                   </el-tooltip>
 
@@ -141,7 +139,7 @@
                 <div style="text-align:left">
                   截止时间：{{j.endTime}}
                 </div>
-                
+
               </el-card>
             </el-col>
 
@@ -150,7 +148,7 @@
 
       </el-main>
       <el-footer>
-       
+
       </el-footer>
     </el-container>
 
@@ -186,127 +184,144 @@ import Header from "../components/Header.vue";
 </style>
 
 <script type="text/javascript">
-
 export default {
-  name:"Index",
-  data(){
+  name: "Index",
+  data() {
     return {
-activeIndex: '1',
-      actStatus:["设计","启用","暂停","结束"],
-      test:0,
-      activity: [
-        {act:[{
-          id:0,
-          name: "0",
-          publisher: "科协",
-          status: 1,
-          startTime: "2019-10-2 12:12:00",
-          endTime: "2019-11-07 23:15:00"
-        },
-        {
-          id:1,
-          name: "1",
-          publisher: "科协",
-          status: 1,
-          startTime: "2019-10-2 12:12:00",
-          endTime: "2019-11-07 23:15:00"
-        },
-        {
-          id:2,
-          name: "2",
-          publisher: "科协",
-          status: 0,
-          startTime: "2019-10-2 12:12:00",
-          endTime: "2019-11-07 23:15:00"
-        },]},
-        {
-          
-          act:[ {
-          id:3,
-          name: "3",
-          publisher: "科协",
-          status: 2,
-          startTime: "2019-10-2 12:12:00",
-          endTime: "2019-11-07 23:15:00"
-        },
-        {
-          id:4,
-          name: "4",
-          publisher: "科协",
-          status: 3,
-          startTime: "2019-10-2 12:12:00",
-          endTime: "2019-11-07 23:15:00"
-        },
-        ]
-        }]
-    }
+      activeIndex: "1",
+      actStatus: ["设计", "启用", "暂停", "结束"],
 
+      activity: []
+    };
   },
-  methods:{
-     handleSelect(key, keyPath) {
-      console.log(key, keyPath);
-    },
-    mounted() {
-     var _this = this
-                _this.$http.get('/admin/activity', {
-                        
-                    }, { emulateJSON: true }
-                )
-                    .then(function (response) {
-                        if (response.ok) {
-                            console.log(response)
-                            
-                        } else {
-                            alert('错误')
-                        }
-                    })
-                    .catch(function (error) {
-                        console.log(error)
-                    })
-     },
-    remove(id){
-      for(var i=0;i<this.activity.length;i++){
-        for(var j=0;j<this.activity[i].act.length;j++){
-          if(this.activity[i].act[j].id==id){
-            this.activity[i].act.splice(j);
+  mounted() {
+    this.getActivity();
+  },
+  methods: {
+    getActivity() {
+      var _this = this;
+
+      _this.$http
+        .get("/api/admin/activity", {}, { emulateJSON: true })
+        .then(function(response) {
+          if (response.ok) {
+            console.log(response);
+            this.activity = [];
+            var length = response.data.length;
+            var list = [];
+            var k = 0;
+            var length3 = Math.floor(length / 3);
+            //console.log('length/3='+length3)
+            for (var i = 0; i < length3; i++) {
+              for (var j = 0; j < 3; j++) {
+                list.push(response.data[k++]);
+              }
+              this.activity.push({ act: list });
+              list = [];
+            }
+            for (var i = 0; i < length - length3 * 3; i++) {
+              list.push(response.data[k++]);
+            }
+            this.activity.push({ act: list });
+            //console.log(this.activity)
+          } else {
+            this.$router.push("/login");
           }
-        }
-      }
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
     },
-    stop(id){
-       for(var i=0;i<this.activity.length;i++){
-        for(var j=0;j<this.activity[i].act.length;j++){
-          if(this.activity[i].act[j].id==id){
-            this.activity[i].act[j].status = 2;
-          }
-        }
-      }
+
+    remove(id) {
+      this.$confirm("您确定删除吗？")
+        .then(_ => {
+          this.$http
+            .delete("/api/admin/activity/" + id, {})
+            .then(response => {
+              if (response.ok) {
+                console.log(response.data.reason);
+                if (response.data.reason != "") {
+                  this.$message.error(response.data.reason);
+                }
+                this.getActivity();
+              }
+            })
+            .catch(function(error) {
+              console.log(error);
+            });
+        })
+        .catch(_ => {});
     },
-    end(id){
-      for(var i=0;i<this.activity.length;i++){
-        for(var j=0;j<this.activity[i].act.length;j++){
-          if(this.activity[i].act[j].id==id){
-            this.activity[i].act[j].status = 3;
+    stop(id) {
+      this.$http
+        .put("/api/admin/activity/" + id + "/status", {
+          status: 2
+        })
+        .then(response => {
+          if (response.ok) {
+            console.log(response);
+            this.getActivity();
           }
-        }
-      }
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
     },
-    start(id){
-      for(var i=0;i<this.activity.length;i++){
-        for(var j=0;j<this.activity[i].act.length;j++){
-          if(this.activity[i].act[j].id==id){
-            console.log(this.activity[i].act[j].status);
-            
-            //  Vue.set(this.activity[i].act[j],status,1);
-            this.activity[i].act[j].status = 1;
-             console.log(this.activity[i].act[j].status);
+    end(id) {
+      this.$confirm("此操作无法撤销，确定结束报名吗？", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          this.$http
+            .put("/api/admin/activity/" + id + "/status", {
+              status: 3
+            })
+            .then(response => {
+              if (response.ok) {
+                console.log(response);
+                this.getActivity();
+              }
+            })
+            .catch(function(error) {
+              console.log(error);
+            });
+        })
+        .catch(() => {});
+    },
+    start(id) {
+      this.$http
+        .put("/api/admin/activity/" + id + "/status", {
+          status: 1
+        })
+        .then(response => {
+          if (response.ok) {
+            console.log(response);
+            this.getActivity();
           }
-        }
-      }
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    },
+    download(id) {
+      this.$http
+        .get("/api/admin/activity/download/" + id, {
        
-    },
-    download() {}
+        })
+        .then(response => {
+          if (response.ok) {
+            console.log(response.data.url);
+            this.$router.push(response.data.url)
+            this.getActivity();
+          }
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    }
   }
-  
 };
 </script>
