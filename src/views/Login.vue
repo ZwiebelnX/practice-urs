@@ -42,7 +42,7 @@
         methods: {
             login () {
                 var _this = this
-                _this.$http.post('https://result.eolinker.com/Lq4MR9W09fe3512b7782dafa4dc072fd0d7f5f5a353d5df?uri=/login', {
+                _this.$http.post('http://47.100.16.60:8080/login', {
                         username: _this.ruleForm2.account,
                         password: _this.ruleForm2.checkPass
                     }, { emulateJSON: true }
