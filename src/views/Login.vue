@@ -40,7 +40,7 @@
             }
         },
         methods: {
-            
+
             submitForm () {
                 this.$http.post('/api/login',
                     {
@@ -50,7 +50,7 @@
                     .then((response) => {
                         if (response.ok) {
                             console.log(response)
-                            this.$router.push('/addtable')
+                            this.$router.push('/index')
                         }
                     })
                     .catch(function (error) {

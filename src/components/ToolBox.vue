@@ -15,7 +15,7 @@
            <el-button
              type="text"
              icon="el-icon-circle-plus-outline"
-             @click="() => addelements(node, data)">
+             @click="addelements(node, data)">
           </el-button>
         </span>
         </div>
@@ -47,11 +47,6 @@
                     store.commit('setTableName', data.label)
                     store.commit('updateTable', this.ccfData)
                 } else {
-                    // const addData = {
-                    //     idx: data.idx,
-                    //     label: data.label
-                    // }
-                    // console.log(data)
                     store.commit('addElement2Table', data)
                 }
             }

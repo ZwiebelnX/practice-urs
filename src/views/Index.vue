@@ -26,7 +26,7 @@
                 content="新增报名"
                 placement="top-end"
               >
-                <i class="el-icon-circle-plus title"></i>
+                <i class="el-icon-circle-plus title" @click="addTable"></i>
               </el-tooltip>
             </el-menu-item>
 
@@ -309,7 +309,7 @@ export default {
     download(id) {
       this.$http
         .get("/api/admin/activity/download/" + id, {
-       
+
         })
         .then(response => {
           if (response.ok) {
@@ -321,7 +321,10 @@ export default {
         .catch(function(error) {
           console.log(error);
         });
-    }
+    },
+      addTable () {
+        this.$router.push('/addtable')
+      }
   }
 };
 </script>

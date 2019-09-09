@@ -14,11 +14,12 @@ export default new Vuex.Store({
   mutations: {
     updateTable (state, data) {
       state.newTable = data
-      console.log(state.newTable)
+      //console.log(state.newTable)
     },
     addElement2Table (state, data) {
+      // let newid =
       var addData = {
-        id: state.tableItemId++,
+        id: this.state.tableItemId++,
         idx: data.idx,
         label: data.label,
         extension: data.extension,
@@ -36,6 +37,7 @@ export default new Vuex.Store({
         useRange: data.useRange,
         children: []
       }
+     // console.log(addData.id)
       state.newTable.push(addData)
     },
     setTableName (state, data) {

@@ -1,7 +1,7 @@
 <template>
   <div class="editordiv">
     <div class="block">
-      <el-input v-model="tableName" placeholder="请输入报名表名称" style="width: 400px;float: left"></el-input>
+      <el-input v-model="tableName" @change="changeTablename()" placeholder="请输入报名表名称" style="width: 400px;float: left"></el-input>
     </div>
     <div class="block">
       <el-date-picker
@@ -17,15 +17,17 @@
       </el-date-picker>
     </div>
     <el-tree
+      ref= "ljTree"
       :data='datas'
       node-key="id"
       @node-drop="handleDrop"
       draggable
       :allow-drop="allowDrop"
       default-expand-all
-      :expand-on-click-node="false">
+      :expand-on-click-node="false"
+      :check-on-click-node = "true">
       <span class="custom-tree-node" style="line-height: 50px" slot-scope="{ node, data }">
-        <span>{{ node.label }}</span>
+        <span>{{ node.label }}  :  {{data.name}}</span>
       <span>
           <el-button
             type="text"
@@ -39,8 +41,8 @@
              icon="el-icon-edit"
              @click="() => editElement(node, data)">
           </el-button>
-          <!-- Form -->
-          <el-dialog :title="'表项：'+form.label" :visible.sync="dialogFormVisible">
+        <!-- Form -->
+          <el-dialog :title="'表项：'+form.label" :visible.sync="dialogFormVisible" :before-close="handleClose">
             <el-row :gutter="10" >
               <el-col :span="6" class="tablelabel">
                 表项名称
@@ -107,15 +109,15 @@
                    </el-date-picker>
               </el-col>
             </el-row>
-            <el-row :gutter="10"  v-if="form.idx !== 6 && (form.idx < 12 ||form.idx>19)">
+            <el-row :gutter="10"  v-if="form.idx !== 6 && form.idx !==4 &&(form.idx < 12 ||form.idx>19)">
               <el-col :span="6" class="tablelabel">
                 -
               </el-col>
               <el-col :span="9">
-               <el-input :placeholder="['最小'+form.rangeName]" v-model="form.range[0]" :disabled="!form.useRange"></el-input>
+               <el-input :placeholder="['最小'+form.rangeName]"  type="number" v-model=form.range[0] :disabled="!form.useRange"></el-input>
               </el-col>
               <el-col :span="9">
-               <el-input :placeholder="['最大'+form.rangeName]" v-model="form.range[1]" :disabled="!form.useRange"></el-input>
+               <el-input :placeholder="['最大'+form.rangeName]"  type="number" v-model=form.range[1] :disabled="!form.useRange"></el-input>
               </el-col>
             </el-row>
             <el-row :gutter="10" v-if="form.idx === 6">
@@ -173,7 +175,7 @@
               <el-col :span="4">
                 <el-input
                   class="input-new-tag"
-                  v-model="form.caseinputValue"
+                  v-model="caseinputValue"
                   ref="saveTagInput"
                   placeholder=' + 新标签'
                   size="medium"
@@ -192,8 +194,7 @@
             </el-row>
             </div>
             <div slot="footer" class="dialog-footer">
-              <el-button @click="dialogFormVisible = false">取 消</el-button>
-              <el-button type="primary" @click="changeElement(node,data)">确 定</el-button>
+              <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
             </div>
           </el-dialog>
         </span>
@@ -213,28 +214,11 @@
             return {
                 value1: true,
                 value2: true,
-                value3: '',
+                value3: [store.state.startTime,store.state.endTime],
+                tableName: store.state.tableName,
                 dialogFormVisible: false,
-                form: {
-                    id: '',
-                    idx: '',
-                    label: '',
-                    extension: '',
-                    name: '',
-                    type: '',
-                    defaultValue: '',
-                    unique: '',
-                    description: '',
-                    tip: '',
-                    require: '',
-                    case: [],
-                    caseEditable: '',
-                    rangeName: '',
-                    range: [],
-                    useRange: '',
-                    caseinputValue: '',
-                    children: []
-                },
+                caseinputValue: '',
+                form: '',
                 formLabelWidth: '120px',
                 options: [{
                     value: '',
@@ -251,20 +235,21 @@
         computed: {
             datas () {
                 return JSON.parse(JSON.stringify(store.state.newTable))
-            },
-            tableName () {
-                return store.state.tableName
             }
         },
         methods: {
+            changeTablename () {
+                store.commit('setTableName', this.tableName)
+                console.log(store.state.tableName)
+            },
             remove (node, data) {
                 const parent = node.parent
                 const children = parent.data.children || parent.data
                 const index = children.findIndex(d => d.id === data.id)
                 children.splice(index, 1)
+
                 const updatedata = this.datas
                 store.commit('updateTable', updatedata)
-                console.log(store.state.newTable)
             },
             handleDrop () {
                 const updatedata = this.datas
@@ -290,41 +275,50 @@
                     this.form.defaultValue = ''
                 }
             },
-            showInput () {
-                this.form.inputVisible = true
-                this.$nextTick(_ => {
-                    this.$refs.saveTagInput.$refs.input.focus()
-                })
-            },
             handleInputConfirm () {
-                let inputValue = this.form.caseinputValue
+                let inputValue = this.caseinputValue
                 if (inputValue) {
                     this.form.case.push(inputValue)
                 }
-                this.form.caseinputValue = ''
+                this.caseinputValue = ''
             },
             selectchange () {
                 // console.log(this.form.defaultValue)
             },
-            changeElement (node, data) {
+            changeElement () {
+                this.caseinputValue = ''
                 this.dialogFormVisible = false
-                const parent = node.parent
-                const children = parent.data.children || parent.data
-                const index = children.findIndex(d => d.id === data.id)
-                children.splice(index, 1, this.form)
+                console.log(this.form)
+                let data = [JSON.parse(JSON.stringify(this.form))]
+                // delete
+                console.log(data)
+                this.$refs['ljTree'].updateKeyChildren(data.id, data)
+                console.log(this.$refs['ljTree'].data)
+            },
+            handleClose () {
+                this.dialogFormVisible = false
+                if(this.form.range.length === 2){
+                    this.form.range[0] = Number(this.form.range[0])
+                    this.form.range[1] = Number(this.form.range[1])
+                }
                 const updatedata = this.datas
                 store.commit('updateTable', updatedata)
-                console.log(store.state.newTable)
             },
             changeDate () {
-                // console.log(this.value3)
-                store.commit('setTime', this.value3)
+                 store.commit('setTime', this.value3)
             }
         }
     }
 </script>
 
 <style lang="scss">
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+  }
+  input[type="number"]{
+    -moz-appearance: textfield;
+  }
   .el-tag + .el-tag {
     margin-left: 10px;
   }

@@ -98,36 +98,85 @@
     export default {
         name: 'AddTable',
         store,
+        data () {
+            return {
+                tableState: {
+                    dirty: false,
+                    hassave: false
+                }
+            }
+        },
+        mounted() {
+            this.tableState.hassave =false
+        },
         components: {
             'tool-box': ToolBox,
             'editor': Editor
         },
         methods: {
             goBack () {
-                console.log('go back')
+                // console.log('go back')
+                if (!this.tableState.hassave) {
+                    this.$confirm('你编辑的内容(已暂存)还没提交， 是否继续离开此页面?', '提示', {
+                        confirmButtonText: '停留',
+                        cancelButtonText: '离开',
+                        type: 'warning'
+                    }).then(() => {
+                        // this.$message({
+                        //     type: 'success',
+                        //     message: '提交成功!'
+                        // });
+                        // this.$router.push('/index')
+                    }).catch(() => {
+                        this.$router.push('/index')
+                    });
+               } else {
+                    this.$router.push('/index')
+                }
             },
             saveTable () {
+
+                const finalTable = JSON.parse(JSON.stringify(store.state.newTable));
+                console.log(finalTable)
+                //debugger
+                for(var i =0;i<finalTable.length;i++) {
+                    this.bfs(finalTable[i])
+                }
                 this.$http.post('/api/admin/activity',
                     {
-                        name: store.state.tableName
+                        name :store.state.tableName,
+                        startTime: store.state.startTime,
+                        endTime: store.state.endTime,
+                        items: finalTable
                     })
-                    .then((response) => {
-                        if (response.ok) {
-                            console.log(response)
-                            this.$router.push('/addtable')
-                        }
+                    .then(function(response) {
+                        console.log(response)
                     })
                     .catch(function (error) {
                         console.log(error)
-                        if (error.status === 401) {
-                            // console.log('错误')
-                            this.$message('密码错误')
-                        } else if (error.status === 403) {
-                            this.$message('禁止访问')
-                        } else {
-                            this.$message('不明错误')
-                        }
                     })
+                store.commit('setTableName', '')
+                store.commit('setTime', ['',''])
+                store.commit('updateTable', '')
+                this.$message({
+                    type: 'success',
+                    message: '提交报名成功'
+                })
+                //this.tableState.hassave = true
+                this.$router.push('/index')
+            },
+            bfs (data) {
+                delete data.id
+                delete data.idx
+                delete data.label
+                delete data.caseEditable
+                delete data.rangeName
+                delete data.useRange
+                data.subItem = JSON.parse(JSON.stringify(data.children))
+                delete data.children
+                for(var i=0;i<data.subItem.length;i++) {
+                    this.bfs(data.subItem[i])
+                }
             }
         }
     }
