@@ -2,15 +2,10 @@
   <div class="toolboxdiv">
     <el-tree
       :data="tools"
-      node-key="id"
-      :expand-on-click-node="false">
+      node-key="id">
       <span class="custom-tree-node" slot-scope="{ node, data }">
         <span>{{ node.label }}</span>
-        <div v-if="data.idx ===4">
-          **
-        </div>
         <div v-if="data.idx !== 1 && data.idx !== 9 && data.idx !== 22">
-          <span>{{data.idx}}</span>
         <span>
            <el-button
              type="text"

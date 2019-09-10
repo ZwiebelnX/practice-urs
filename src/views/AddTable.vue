@@ -22,7 +22,7 @@
               编辑区
             </span>
             <span style="float: right">
-              <el-button round size="medium" @click="saveTable()">保存</el-button>
+              <el-button round size="medium" @click="saveTable()">提交</el-button>
             </span>
           </el-header>
           <el-main>
@@ -135,7 +135,6 @@
                 }
             },
             saveTable () {
-
                 const finalTable = JSON.parse(JSON.stringify(store.state.newTable));
                 console.log(finalTable)
                 //debugger
@@ -154,6 +153,13 @@
                     })
                     .catch(function (error) {
                         console.log(error)
+                        if(error.status === 401) {
+                            this.$router.push('/')
+                            this.$message({
+                                type: 'warning',
+                                message: '已暂存您的编辑内容,请先登录'
+                            })
+                        }
                     })
                 store.commit('setTableName', '')
                 store.commit('setTime', ['',''])
