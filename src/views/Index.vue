@@ -2,6 +2,27 @@
 <template>
 
   <div>
+    <el-dialog title="收货地址" :visible.sync="dialogFormVisible">
+  <el-form :model="form" label-width="80px" label-position="right" >
+    <el-form-item label="活动名称" >
+      <el-input v-model="form.name"></el-input>
+    </el-form-item>
+    <el-form-item label="开始时间">
+      <el-date-picker
+      v-model="value1"
+      type="datetimerange"
+      range-separator="至"
+      start-placeholder="开始日期"
+      end-placeholder="结束日期">
+    </el-date-picker>
+    </el-form-item>
+    
+  </el-form>
+  <div slot="footer" class="dialog-footer">
+    <el-button @click="dialogFormVisible = false">取 消</el-button>
+    <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+  </div>
+</el-dialog>
 
     <el-container>
       <el-header>
@@ -15,6 +36,7 @@
               index="1"
               class="title"
             >报名系统</el-menu-item>
+            
             <el-menu-item
               index="2"
               class="title"
@@ -26,11 +48,27 @@
                 content="新增报名"
                 placement="top-end"
               >
-                <i class="el-icon-circle-plus title"></i>
+                <i class="el-icon-circle-plus title"  @click="$router.push('/addtable')"></i>
+              </el-tooltip>
+            </el-menu-item>
+
+             <el-menu-item
+              index="3"
+              class="title"
+              style="float: right;"
+            >
+              <el-tooltip
+                class="item"
+                effect="dark"
+                content="上传模板报名"
+                placement="top-end"
+              >
+                <i class="el-icon-upload2"  @click="upload()"></i>
               </el-tooltip>
             </el-menu-item>
 
           </el-menu>
+
 
         </Header>
       </el-header>
@@ -190,8 +228,19 @@ export default {
     return {
       activeIndex: "1",
       actStatus: ["设计", "启用", "暂停", "结束"],
-
-      activity: []
+      activity: [],
+      dialogFormVisible: false,
+      form: {
+          name: '',
+          region: '',
+          date1: '',
+          date2: '',
+          delivery: false,
+          type: [],
+          resource: '',
+          desc: ''
+        },
+      formLabelWidth: '100px'
     };
   },
   mounted() {
@@ -204,8 +253,8 @@ export default {
       _this.$http
         .get("/api/admin/activity", {}, { emulateJSON: true })
         .then(function(response) {
-          if (response.ok) {
-            console.log(response);
+          if (response.ok==true&&response.status==200) {
+            
             this.activity = [];
             var length = response.data.length;
             var list = [];
@@ -225,12 +274,14 @@ export default {
             this.activity.push({ act: list });
             //console.log(this.activity)
           } else {
-            this.$router.push("/login");
+            console.log("error")
+            this.$router.push("/")
           }
         })
         .catch(function(error) {
-          console.log(error);
-        });
+          console.log(error)
+          this.$router.push("/")
+        })
     },
 
     remove(id) {
@@ -306,6 +357,9 @@ export default {
           console.log(error);
         });
     },
+    upload(){
+      this.dialogFormVisible=true;
+    },
     download(id) {
       this.$http
         .get("/api/admin/activity/download/" + id, {
@@ -313,8 +367,8 @@ export default {
         })
         .then(response => {
           if (response.ok) {
-            console.log(response.data.url);
-            this.$router.push(response.data.url)
+            console.log(response.data);
+            window.open(response.data.url,'hello')
             this.getActivity();
           }
         })
