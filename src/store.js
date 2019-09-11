@@ -9,12 +9,17 @@ export default new Vuex.Store({
     newTable: [],
     tableName: '',
     startTime: '',
-    endTime: ''
+    endTime: '',
+    activity:{}
   },
   mutations: {
     updateTable (state, data) {
       state.newTable = data
       //console.log(state.newTable)
+    },
+    addAct(state,data){
+      state.activity=data
+
     },
     addElement2Table (state, data) {
       // let newid =

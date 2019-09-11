@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Login from './views/Login.vue'
 import Index from './views/Index.vue'
 import AddTable from './views/AddTable'
+import Detail from './views/Detail'
 
 Vue.use(Router)
 
@@ -28,6 +29,11 @@ export default new Router({
       path: '/addtable',
       name: 'addtable',
       component: AddTable
+    },
+    {
+      path: '/detail',
+      name: 'detail',
+      component: Detail
     }
   ]
 })

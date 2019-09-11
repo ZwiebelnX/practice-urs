@@ -2,76 +2,45 @@
 <template>
 
   <div>
-    <el-dialog title="收货地址" :visible.sync="dialogFormVisible">
-  <el-form :model="form" label-width="80px" label-position="right" >
-    <el-form-item label="活动名称" >
-      <el-input v-model="form.name"></el-input>
-    </el-form-item>
-    <el-form-item label="开始时间">
-      <el-date-picker
-      v-model="value1"
-      type="datetimerange"
-      range-separator="至"
-      start-placeholder="开始日期"
-      end-placeholder="结束日期">
-    </el-date-picker>
-    </el-form-item>
+    
+    <el-dialog
+      title="上传成绩"
+      :visible.sync="scoreFormVisible"
+    >
+      <el-form :model="scoreid"  label-position="top"
+        label-width="80px"
+        style="text-align: center;">
+        <el-form-item
+          label=""
+          :label-width="formLabelWidth"
+        >
+          <el-upload
+            class="upload-demo"
+            action="/api/admin/submitCSP"
+            :limit="1"
+            :data="scoreid"
+            :name="file"
+            :accept="xls"
+            :auto-upload="true"
+            :multiple="false"
+            :on-exceed="scoreexceed"
+            :on-success="scoresuccess"
+            :on-error="scoreerror"
+          >
+            <el-button
+              size="small"
+              type="primary"
+            >点击上传</el-button>
+            <div slot="tip" class="el-upload__tip">只能上传xls文件</div>
+          </el-upload>
+        </el-form-item>
 
-  </el-form>
-  <div slot="footer" class="dialog-footer">
-    <el-button @click="dialogFormVisible = false">取 消</el-button>
-    <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
-  </div>
-</el-dialog>
+      </el-form>
+      
+    </el-dialog>
 
     <el-container>
-      <el-header>
-        <Header>
-          <el-menu
-            :default-active="activeIndex"
-            class="el-menu-demo"
-            mode="horizontal"
-          >
-            <el-menu-item
-              index="1"
-              class="title"
-            >报名系统</el-menu-item>
-
-            <el-menu-item
-              index="2"
-              class="title"
-              style="float: right;"
-            >
-              <el-tooltip
-                class="item"
-                effect="dark"
-                content="新增报名"
-                placement="top-end"
-              >
-                <i class="el-icon-circle-plus title"  @click="$router.push('/addtable')"></i>
-              </el-tooltip>
-            </el-menu-item>
-
-             <el-menu-item
-              index="3"
-              class="title"
-              style="float: right;"
-            >
-              <el-tooltip
-                class="item"
-                effect="dark"
-                content="上传模板报名"
-                placement="top-end"
-              >
-                <i class="el-icon-upload2"  @click="upload()"></i>
-              </el-tooltip>
-            </el-menu-item>
-
-          </el-menu>
-
-
-        </Header>
-      </el-header>
+     <mainheader v-on:headerid="getActivity()"></mainheader>
       <el-main>
 
         <div
@@ -86,10 +55,13 @@
               v-for="j in o.act"
               :key="j"
             >
-              <el-card class="box-card">
+              <el-card class="box-card"  
+              shadow="hover"
+              @click="todetail(j.id)">
                 <div
                   slot="header"
                   class="clearfix"
+                   
                 >
                   <el-tooltip
                     class="title button"
@@ -103,6 +75,23 @@
                       circle
                       @click="remove(j.id)"
                     ></el-button>
+                  </el-tooltip>
+
+                  <el-tooltip
+                    v-if="j.status==3"
+                    class="title button"
+                    style="float: left;margin-top:-10px;"
+                    effect="dark"
+                    content="上传成绩"
+                    placement="top-end"
+                  >
+
+                    <el-button
+                      icon="el-icon-edit-outline"
+                      circle
+                      @click="score(j.id)"
+                    ></el-button>
+
                   </el-tooltip>
 
                   <el-tooltip
@@ -126,7 +115,7 @@
                     class="title button"
                     style="float: right;margin-top:-10px;"
                     effect="dark"
-                    content="导出"
+                    content="导出报名表"
                     placement="top-end"
                   >
                     <el-button
@@ -165,6 +154,7 @@
                   </el-tooltip>
 
                 </div>
+                <div  @click="todetail(j.id)">
                 <div style="text-align:left">
                   状态：{{(actStatus[j.status])}}
                 </div>
@@ -176,6 +166,7 @@
                 </div>
                 <div style="text-align:left">
                   截止时间：{{j.endTime}}
+                </div>
                 </div>
 
               </el-card>
@@ -222,6 +213,8 @@ import Header from "../components/Header.vue";
 </style>
 
 <script type="text/javascript">
+ import MainHeader from '../components/MainHeader.vue'
+  import store from '../store'
 export default {
   name: "Index",
   data() {
@@ -229,19 +222,15 @@ export default {
       activeIndex: "1",
       actStatus: ["设计", "启用", "暂停", "结束"],
       activity: [],
-      dialogFormVisible: false,
-      form: {
-          name: '',
-          region: '',
-          date1: '',
-          date2: '',
-          delivery: false,
-          type: [],
-          resource: '',
-          desc: ''
-        },
-      formLabelWidth: '100px'
+      singleAct:[],
+      scoreFormVisible:false,
+      scoreid:{id:-1},//上传成绩用的
+      
     };
+  },
+  components: {
+     'mainheader':MainHeader
+           
   },
   mounted() {
     this.getActivity();
@@ -253,8 +242,9 @@ export default {
       _this.$http
         .get("/api/admin/activity", {}, { emulateJSON: true })
         .then(function(response) {
-          if (response.ok==true&&response.status==200) {
-
+          if (response.ok == true && response.status == 200) {
+            this.singleAct=response.data
+           // console.log(this.singleAct)
             this.activity = [];
             var length = response.data.length;
             var list = [];
@@ -274,14 +264,14 @@ export default {
             this.activity.push({ act: list });
             //console.log(this.activity)
           } else {
-            console.log("error")
-            this.$router.push("/")
+            console.log("error");
+            this.$router.push("/");
           }
         })
         .catch(function(error) {
-          console.log(error)
-          this.$router.push("/")
-        })
+          console.log(error);
+          this.$router.push("/");
+        });
     },
 
     remove(id) {
@@ -357,24 +347,56 @@ export default {
           console.log(error);
         });
     },
-    upload(){
-      this.dialogFormVisible=true;
-    },
+    
     download(id) {
       this.$http
-        .get("/api/admin/activity/download/" + id, {
-
-        })
+        .get("/api/admin/activity/download/" + id, {})
         .then(response => {
           if (response.ok) {
-            console.log(response.data);
-            window.open(response.data.url,'hello')
+            // console.log(response.data);
+            window.open(response.data.url, "hello");
+            window.open(response.data.excel, "hello");
             this.getActivity();
           }
         })
         .catch(function(error) {
           console.log(error);
         });
+    },
+   
+    score(id) {
+      this.scoreFormVisible = true;
+      this.scoreid.id=id;
+    },
+    scoresuccess(response, file, fileList){
+       console.log(response);
+       if(response.reason==""){
+          this.$message.success("上传成功");
+       }
+       else{
+         this.$message.error(response.reason);
+       }
+      
+      this.scoreFormVisible = false;
+
+    },
+    scoreerror(err, file, fileList){
+      console.log(error);
+       this.$message.error("上传失败");
+        this.scoreFormVisible = false;
+    },
+    scoreexceed(){
+       this.$message.error("只能上传一个文件");
+    },
+    todetail(id){
+        
+        for(var i=0;i<this.singleAct.length;i++){
+            if(this.singleAct[i].id==id){
+             // console.log('id'+this.singleAct[i])
+               store.commit('addAct', this.singleAct[i])
+            }
+        }
+      this.$router.push({path:'/detail',query: { detailId: id}})
     }
   }
 };
