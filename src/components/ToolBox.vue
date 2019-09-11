@@ -2,16 +2,17 @@
   <div class="toolboxdiv">
     <el-tree
       :data="tools"
-      node-key="id">
+      node-key="id"
+      @node-click="handleNodeClick">
       <span class="custom-tree-node" slot-scope="{ node, data }">
         <span>{{ node.label }}</span>
         <div v-if="data.idx !== 1 && data.idx !== 9 && data.idx !== 22">
         <span>
-           <el-button
-             type="text"
-             icon="el-icon-circle-plus-outline"
-             @click="addelements(node, data)">
-          </el-button>
+<!--           <el-button-->
+<!--             type="text"-->
+<!--             icon="el-icon-circle-plus-outline"-->
+<!--             @click="addelements(node, data)">-->
+<!--          </el-button>-->
         </span>
         </div>
       </span>
@@ -44,7 +45,16 @@
                 } else {
                     store.commit('addElement2Table', data)
                 }
+            },
+            handleNodeClick(data) {
+                if (data.idx === 23) {
+                    store.commit('setTableName', data.label)
+                    store.commit('updateTable', this.ccfData)
+                } else {
+                    store.commit('addElement2Table', data)
+                }
             }
+
         }
 
     }

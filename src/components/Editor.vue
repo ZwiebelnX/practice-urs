@@ -42,7 +42,7 @@
              @click="() => editElement(node, data)">
           </el-button>
         <!-- Form -->
-          <el-dialog :title="'表项：'+form.label" :visible.sync="dialogFormVisible" :before-close="handleClose">
+          <el-dialog :title="'表项：'+form.label" :visible.sync="dialogFormVisible" @close="handledialogClose">
             <el-row :gutter="10" >
               <el-col :span="6" class="tablelabel">
                 表项名称
@@ -295,14 +295,18 @@
                 this.$refs['ljTree'].updateKeyChildren(data.id, data)
                 console.log(this.$refs['ljTree'].data)
             },
-            handleClose () {
-                this.dialogFormVisible = false
+            handledialogClose () {
+
                 if(this.form.range.length === 2){
                     this.form.range[0] = Number(this.form.range[0])
                     this.form.range[1] = Number(this.form.range[1])
                 }
                 const updatedata = this.datas
+               // console.log('关闭前的更新pp数据')
+                //console.log(updatedata)
+                //debugger
                 store.commit('updateTable', updatedata)
+               // this.dialogFormVisible = false
             },
             changeDate () {
                  store.commit('setTime', this.value3)

@@ -43,7 +43,7 @@ export default new Vuex.Store({
         children: []
       }
      // console.log(addData.id)
-      state.newTable.push(addData)
+      this.state.newTable.push(addData)
     },
     setTableName (state, data) {
       state.tableName = data

@@ -141,15 +141,27 @@
                 for(var i =0;i<finalTable.length;i++) {
                     this.bfs(finalTable[i])
                 }
+                let updata = {
+                    name :store.state.tableName,
+                    startTime: store.state.startTime,
+                    endTime: store.state.endTime,
+                    items: finalTable
+                }
+                console.log(JSON.stringify(updata))
                 this.$http.post('/api/admin/activity',
-                    {
-                        name :store.state.tableName,
-                        startTime: store.state.startTime,
-                        endTime: store.state.endTime,
-                        items: finalTable
-                    })
+                    JSON.stringify(updata)
+                    )
                     .then(function(response) {
                         console.log(response)
+                        store.commit('setTableName', '')
+                        store.commit('setTime', ['',''])
+                        store.commit('updateTable', [])
+                        this.$message({
+                            type: 'success',
+                            message: '提交报名成功'
+                        })
+                        //this.tableState.hassave = true
+                        this.$router.push('/index')
                     })
                     .catch(function (error) {
                         console.log(error)
@@ -161,15 +173,7 @@
                             })
                         }
                     })
-                store.commit('setTableName', '')
-                store.commit('setTime', ['',''])
-                store.commit('updateTable', '')
-                this.$message({
-                    type: 'success',
-                    message: '提交报名成功'
-                })
-                //this.tableState.hassave = true
-                this.$router.push('/index')
+
             },
             bfs (data) {
                 delete data.id
